@@ -108,6 +108,26 @@ except Exception as e:
     print(f"⚠ Warning: Could not load BO2 model: {e}")
     model_bo2 = None
 
+# BO4 - SVM User Profiling Model
+try:
+    model_bo4 = joblib.load(MODEL_DIR / "BO4" / "svm_user_profiling_model.pkl")
+    scaler_bo4 = joblib.load(MODEL_DIR / "BO4" / "scaler.pkl")
+    
+    with open(MODEL_DIR / "BO4" / "feature_names.json", "r", encoding='utf-8') as f:
+        feature_names_bo4 = json.load(f)
+    
+    with open(MODEL_DIR / "BO4" / "cluster_info.json", "r", encoding='utf-8') as f:
+        cluster_info_bo4 = json.load(f)
+    
+    with open(MODEL_DIR / "BO4" / "model_metadata.json", "r", encoding='utf-8') as f:
+        metadata_bo4 = json.load(f)
+    
+    print("✓ BO4 model loaded successfully")
+    print(f"✓ SVM User Profiling | {metadata_bo4.get('n_clusters', 0)} clusters | Accuracy: {metadata_bo4['performance']['accuracy']:.2%}")
+except Exception as e:
+    print(f"⚠ Warning: Could not load BO4 model: {e}")
+    model_bo4 = None
+
 
 class RecipeFeatures(BaseModel):
     """Input features for recipe rating prediction (BO3)"""
@@ -140,6 +160,16 @@ class PopularityPredictionRequest(BaseModel):
     CookTime: float
     TotalTime: float
     AggregatedRating: float
+
+
+class UserProfilingRequest(BaseModel):
+    """Input for user profiling (BO4)"""
+    Avg_Rating: float
+    Avg_Calories: float
+    Avg_Protein: float
+    Avg_Fat: float
+    Avg_Sugar: float
+    Review_Count: int
 
 
 @app.get("/")
@@ -592,6 +622,72 @@ def classify_cuisine(request: CuisineClassificationRequest):
         raise HTTPException(status_code=500, detail=f"Classification error: {str(e)}")
 
 
+@app.post("/bo4/profile")
+def predict_user_profile(request: UserProfilingRequest):
+    """
+    BO4: Predict user profile/segment for targeted marketing
+    Uses SVM model to classify users into 4 segments based on their preferences
+    """
+    if model_bo4 is None:
+        raise HTTPException(status_code=503, detail="BO4 model not loaded")
+    
+    try:
+        # Create feature array in correct order
+        user_data = pd.DataFrame({
+            'Avg_Rating': [request.Avg_Rating],
+            'Avg_Calories': [request.Avg_Calories],
+            'Avg_Protein': [request.Avg_Protein],
+            'Avg_Fat': [request.Avg_Fat],
+            'Avg_Sugar': [request.Avg_Sugar],
+            'Review_Count': [request.Review_Count]
+        })
+        
+        # Scale the features
+        user_data_scaled = scaler_bo4.transform(user_data)
+        
+        # Predict cluster
+        predicted_cluster = model_bo4.predict(user_data_scaled)[0]
+        
+        # Get cluster name and description
+        cluster_name = cluster_info_bo4["cluster_names"].get(str(predicted_cluster), f"Cluster {predicted_cluster}")
+        cluster_description = cluster_info_bo4["cluster_descriptions"].get(str(predicted_cluster), "Description not available")
+        marketing_strategy = cluster_info_bo4["marketing_strategies"].get(str(predicted_cluster), "Strategy not available")
+        
+        # Get confidence if available
+        confidence = None
+        if hasattr(model_bo4, 'predict_proba'):
+            try:
+                proba = model_bo4.predict_proba(user_data_scaled)
+                confidence = float(np.max(proba) * 100)
+            except:
+                pass
+        
+        return {
+            "predicted_cluster": int(predicted_cluster),
+            "cluster_name": cluster_name,
+            "description": cluster_description,
+            "marketing_strategy": marketing_strategy,
+            "confidence": round(confidence, 2) if confidence else None,
+            "user_data": {
+                "avg_rating": request.Avg_Rating,
+                "avg_calories": request.Avg_Calories,
+                "avg_protein": request.Avg_Protein,
+                "avg_Fat": request.Avg_Fat,
+                "avg_sugar": request.Avg_Sugar,
+                "review_count": request.Review_Count
+            },
+            "model_performance": {
+                "accuracy": round(metadata_bo4["performance"]["accuracy"] * 100, 2),
+                "f1_score": round(metadata_bo4["performance"]["f1_score"], 4)
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Profiling error: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
     print("\n" + "="*60)
@@ -602,6 +698,7 @@ if __name__ == "__main__":
     print("🎯 BO1 (KNN Recommendations): /bo1/recommend")
     print("🎯 BO2 (Popularity Prediction): /bo2/predict")
     print("🎯 BO3 (Rating Prediction): /bo3/predict")
+    print("🎯 BO4 (User Profiling): /bo4/profile")
     print("🎯 BO5 (Cuisine Classification): /bo5/classify")
     print("="*60 + "\n")
     uvicorn.run(app, host="0.0.0.0", port=8000)

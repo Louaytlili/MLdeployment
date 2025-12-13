@@ -1,0 +1,26 @@
+{
+  "model_type": "SVM (Support Vector Machine)",
+  "optimization": "GridSearchCV",
+  "best_params": {
+    "C": 10,
+    "gamma": "auto",
+    "kernel": "rbf"
+  },
+  "performance": {
+    "accuracy": 0.9979959919839679,
+    "f1_score": 0.9979975871122285,
+    "precision": 0.998008658008658,
+    "recall": 0.9979959919839679
+  },
+  "features": [
+    "Avg_Rating",
+    "Avg_Calories",
+    "Avg_Protein",
+    "Avg_Fat",
+    "Avg_Sugar",
+    "Review_Count"
+  ],
+  "n_clusters": 4,
+  "train_size": 19958,
+  "test_size": 4990
+}

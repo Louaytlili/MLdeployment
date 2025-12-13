@@ -1,0 +1,20 @@
+{
+  "cluster_names": {
+    "0": "Profil Sportif",
+    "1": "Profil Gourmet",
+    "2": "Profil Santé Light",
+    "3": "Profil Gourmand Calorique"
+  },
+  "cluster_descriptions": {
+    "0": "Profil Sportif - Riches en protéines, calories modérées, nutrition optimisée",
+    "1": "Profil Gourmet - Ratings élevés, recherche de qualité et saveurs raffinées",
+    "2": "Profil Santé Light - Faibles calories, graisses et sucres, focus bien-être",
+    "3": "Profil Gourmand Calorique - Calories, graisses et sucres élevés, plaisir gustatif"
+  },
+  "marketing_strategies": {
+    "0": "Recettes riches en protéines, plans nutritionnels sportifs, partenariats fitness",
+    "1": "Recettes gastronomiques, ingrédients premium, expériences culinaires exclusives",
+    "2": "Recettes légères et détox, plans minceur, coaching bien-être",
+    "3": "Recettes généreuses, desserts, comfort food, occasions spéciales"
+  }
+}

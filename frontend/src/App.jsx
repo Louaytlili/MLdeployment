@@ -24,6 +24,18 @@ function App() {
   const [cuisineResult, setCuisineResult] = useState(null)
   const [loadingBO5, setLoadingBO5] = useState(false)
   
+  // BO4 state
+  const [formDataBO4, setFormDataBO4] = useState({
+    Avg_Rating: 4.0,
+    Avg_Calories: 400,
+    Avg_Protein: 20,
+    Avg_Fat: 15,
+    Avg_Sugar: 10,
+    Review_Count: 50
+  })
+  const [profileResult, setProfileResult] = useState(null)
+  const [loadingBO4, setLoadingBO4] = useState(false)
+  
   // BO2 state
   const [formDataBO2, setFormDataBO2] = useState({
     Calories: '',
@@ -70,6 +82,28 @@ function App() {
       .then(res => setApiStatus(res.data))
       .catch(() => setApiStatus({ status: 'offline' }))
   }, [])
+
+  const handleBO4Submit = async (e) => {
+    e.preventDefault()
+    setLoadingBO4(true)
+    setError(null)
+    try {
+      const response = await axios.post(`${API_URL}/bo4/profile`, formDataBO4)
+      setProfileResult(response.data)
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Erreur de profilage utilisateur')
+    } finally {
+      setLoadingBO4(false)
+    }
+  }
+
+  const handleBO4InputChange = (e) => {
+    const { name, value } = e.target
+    setFormDataBO4(prev => ({
+      ...prev,
+      [name]: name === 'Review_Count' ? parseInt(value) || 0 : parseFloat(value) || 0
+    }))
+  }
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target
@@ -287,7 +321,7 @@ function App() {
           >
             Business Understanding
           </button>
-          {['bo1', 'bo2', 'bo3', 'bo5'].map(bo => (
+          {['bo1', 'bo2', 'bo3', 'bo4', 'bo5'].map(bo => (
             <button
               key={bo}
               className={`nav-link ${activeSection === bo ? 'active' : ''}`}
@@ -331,7 +365,7 @@ function App() {
               </div>
 
               {/* BO3 */}
-              <div className="trapezoid-card left">
+              <div className="trapezoid-card right">
                 <div className="trapezoid-content">
                   <div className="bo-badge">BO3</div>
                   <h3>Prédiction de Notes de Recettes</h3>
@@ -343,8 +377,21 @@ function App() {
                 </div>
               </div>
 
-              {/* BO5 */}
+              {/* BO4 */}
               <div className="trapezoid-card left">
+                <div className="trapezoid-content">
+                  <div className="bo-badge">BO4</div>
+                  <h3>Segmentation et Profilage Utilisateur</h3>
+                  <div className="dso-section">
+                    <strong>DSO 4:</strong>
+                    <p>Classification SVM pour segmenter les utilisateurs en 4 profils distincts pour un marketing ciblé et personnalisé</p>
+                  </div>
+                  <button className="goto-btn" onClick={() => setActiveSection('bo4')}>Accéder à BO4 →</button>
+                </div>
+              </div>
+
+              {/* BO5 */}
+              <div className="trapezoid-card right">
                 <div className="trapezoid-content">
                   <div className="bo-badge">BO5</div>
                   <h3>Classification de Type de Cuisine</h3>
@@ -826,7 +873,115 @@ function App() {
             </div>
           </div>
         )}
-        {activeSection === 'bo4' && renderPlaceholder(4, 'Recipe Recommendation System')}
+        
+        {activeSection === 'bo4' && (
+          <div className="bo3-section">
+            <div className="section-header">
+              <h1>Profilage Utilisateur et Marketing Ciblé</h1>
+              <p>Identifiez votre profil utilisateur avec le modèle SVM pour des recommandations marketing personnalisées</p>
+            </div>
+
+            <div className="dual-container">
+              <div className="input-container">
+                <h2>Vos Préférences Culinaires</h2>
+                <form onSubmit={handleBO4Submit}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '5px', color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>Note Moyenne (1-5)</label>
+                      <input type="number" name="Avg_Rating" value={formDataBO4.Avg_Rating} onChange={handleBO4InputChange} min="1" max="5" step="0.1" required style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '6px' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '5px', color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>Calories Moyennes</label>
+                      <input type="number" name="Avg_Calories" value={formDataBO4.Avg_Calories} onChange={handleBO4InputChange} min="0" required style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '6px' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '5px', color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>Protéines Moyennes (g)</label>
+                      <input type="number" name="Avg_Protein" value={formDataBO4.Avg_Protein} onChange={handleBO4InputChange} min="0" step="0.1" required style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '6px' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '5px', color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>Lipides Moyens (g)</label>
+                      <input type="number" name="Avg_Fat" value={formDataBO4.Avg_Fat} onChange={handleBO4InputChange} min="0" step="0.1" required style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '6px' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '5px', color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>Sucres Moyens (g)</label>
+                      <input type="number" name="Avg_Sugar" value={formDataBO4.Avg_Sugar} onChange={handleBO4InputChange} min="0" step="0.1" required style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '6px' }} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '5px', color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>Nombre d'Avis</label>
+                      <input type="number" name="Review_Count" value={formDataBO4.Review_Count} onChange={handleBO4InputChange} min="1" required style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '6px' }} />
+                    </div>
+                  </div>
+                  <button type="submit" className="predict-btn" disabled={loadingBO4}>
+                    {loadingBO4 ? (<><span className="spinner"></span>Analyse...</>) : 'Identifier Mon Profil'}
+                  </button>
+                </form>
+                
+                <div style={{ marginTop: '20px', fontSize: '0.9rem', color: '#64748b', lineHeight: '1.6' }}>
+                  <strong style={{ color: '#10b981' }}>Comment ça marche:</strong>
+                  <ul style={{ marginTop: '8px', paddingLeft: '20px' }}>
+                    <li>Entrez vos préférences culinaires moyennes</li>
+                    <li>Le modèle SVM identifie votre profil parmi 4 segments</li>
+                    <li>Obtenez des recommandations marketing personnalisées</li>
+                    <li>Précision du modèle: ~99-100%</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="results-container">
+                <h2>Votre Profil Utilisateur</h2>
+                {!profileResult && !error && (
+                  <div className="empty-state">
+                    <p>Entrez vos préférences pour découvrir votre profil culinaire</p>
+                  </div>
+                )}
+                {error && (
+                  <div className="error-display">
+                    <h3>Erreur de Profilage</h3>
+                    <p>{error}</p>
+                  </div>
+                )}
+                {profileResult && (
+                  <div className="prediction-display">
+                    <div className="rating-section" style={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)' }}>
+                      <div className="rating-label" style={{ fontSize: '0.9rem', marginBottom: '10px' }}>PROFIL IDENTIFIÉ</div>
+                      <div className="rating-value" style={{ fontSize: '1.8rem', marginBottom: '15px' }}>{profileResult.cluster_name}</div>
+                      {profileResult.confidence && (
+                        <div className="rating-label" style={{ fontSize: '1rem', marginTop: '10px' }}>
+                          {profileResult.confidence}% Confiance
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div style={{ marginTop: '20px', padding: '15px', background: '#f8fafc', borderRadius: '8px' }}>
+                      <strong style={{ fontSize: '0.9rem', color: '#475569' }}>Description du Profil:</strong>
+                      <p style={{ marginTop: '8px', fontSize: '0.9rem', color: '#64748b', lineHeight: '1.5' }}>{profileResult.description}</p>
+                    </div>
+                    
+                    <div style={{ marginTop: '15px', padding: '15px', background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
+                      <strong style={{ fontSize: '0.9rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        💡 Stratégie Marketing Recommandée:
+                      </strong>
+                      <p style={{ marginTop: '8px', fontSize: '0.85rem', color: '#065f46', lineHeight: '1.5' }}>{profileResult.marketing_strategy}</p>
+                    </div>
+                    
+                    {profileResult.model_performance && (
+                      <div style={{ marginTop: '15px', padding: '12px', background: 'white', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#64748b' }}>
+                          <span>Précision du Modèle:</span>
+                          <span style={{ color: '#10b981', fontWeight: '600' }}>{profileResult.model_performance.accuracy}%</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#64748b', marginTop: '6px' }}>
+                          <span>F1-Score:</span>
+                          <span style={{ color: '#10b981', fontWeight: '600' }}>{profileResult.model_performance.f1_score}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         
         {activeSection === 'bo5' && (
           <div className="bo3-section">
