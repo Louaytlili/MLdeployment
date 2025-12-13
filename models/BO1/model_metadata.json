@@ -1,0 +1,18 @@
+{
+  "model_type": "KNeighborsRegressor",
+  "n_neighbors": 5,
+  "metric": "euclidean",
+  "n_recipes": 10215,
+  "n_features": 9,
+  "features": [
+    "Calories",
+    "FatContent",
+    "SaturatedFatContent",
+    "CholesterolContent",
+    "SodiumContent",
+    "CarbohydrateContent",
+    "FiberContent",
+    "SugarContent",
+    "ProteinContent"
+  ]
+}

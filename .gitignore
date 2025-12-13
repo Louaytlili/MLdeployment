@@ -1,0 +1,16 @@
+# Node
+node_modules/
+frontend/node_modules/
+
+# Data
+*.csv
+/data/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Env
+.env

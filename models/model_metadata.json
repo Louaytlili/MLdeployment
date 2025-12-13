@@ -1,0 +1,14 @@
+{
+  "model_type": "Ridge Regression",
+  "features": "Ingredients Only",
+  "target": "AggregatedRating (normalized 0-1)",
+  "alpha": 1.0,
+  "n_features": 3618,
+  "mae_test": 0.0694966006843676,
+  "rmse_test": 0.11499534820338495,
+  "r2_test": -0.0774320341428043,
+  "trained_on_samples": 15650,
+  "tested_on_samples": 3913,
+  "mae_stars": 0.34748300342183797,
+  "rmse_stars": 0.5749767410169248
+}
