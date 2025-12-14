@@ -1303,51 +1303,101 @@ function App() {
                       <div className="rating-value">{prediction.rating_display}</div>
                       <div className="rating-label">Note Prédite</div>
                     </div>
+
+                    {/* Similar Recipes - Top 3 */}
+                    {prediction.similar_recipes && prediction.similar_recipes.length > 0 && (
+                      <div style={{ marginTop: '20px' }}>
+                        <strong style={{ fontSize: '0.9rem', color: '#475569' }}>Recettes Similaires:</strong>
+                        <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          {prediction.similar_recipes.slice(0, 3).map((recipe, idx) => (
+                            <div 
+                              key={idx}
+                              style={{ 
+                                padding: '12px', 
+                                background: '#f8fafc', 
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0'
+                              }}
+                            >
+                              {/* Recipe Name and Rating */}
+                              <div style={{ 
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '8px'
+                              }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                  <span style={{ 
+                                    fontWeight: '600',
+                                    color: '#1e293b',
+                                    fontSize: '0.85rem'
+                                  }}>
+                                    {recipe.name}
+                                  </span>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <div className="badge-stars" style={{ fontSize: '0.75rem' }}>
+                                      {[...Array(5)].map((_, i) => (
+                                        <span key={i} className={i < Math.round(recipe.rating_stars) ? 'star-small filled' : 'star-small'} style={{ fontSize: '0.75rem' }}>★</span>
+                                      ))}
+                                    </div>
+                                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600' }}>
+                                      {recipe.rating_stars.toFixed(2)}
+                                    </span>
+                                  </div>
+                                </div>
+                                <span style={{ 
+                                  fontWeight: '700',
+                                  color: '#10b981',
+                                  fontSize: '0.85rem',
+                                  whiteSpace: 'nowrap',
+                                  marginLeft: '10px'
+                                }}>
+                                  {recipe.similarity_score}%
+                                </span>
+                              </div>
+                              
+                              {/* Ingredients List */}
+                              <div style={{ marginTop: '8px' }}>
+                                <div style={{ 
+                                  display: 'flex', 
+                                  flexWrap: 'wrap', 
+                                  gap: '4px',
+                                  fontSize: '0.75rem'
+                                }}>
+                                  {recipe.common_ingredients && recipe.common_ingredients.map((ing, i) => (
+                                    <span key={`c-${i}`} style={{
+                                      padding: '3px 8px',
+                                      background: '#d1fae5',
+                                      color: '#065f46',
+                                      borderRadius: '4px',
+                                      fontWeight: '600',
+                                      fontSize: '0.7rem'
+                                    }}>
+                                      {ing}
+                                    </span>
+                                  ))}
+                                  {recipe.other_ingredients && recipe.other_ingredients.map((ing, i) => (
+                                    <span key={`o-${i}`} style={{
+                                      padding: '3px 8px',
+                                      background: '#e2e8f0',
+                                      color: '#64748b',
+                                      borderRadius: '4px',
+                                      fontSize: '0.7rem'
+                                    }}>
+                                      {ing}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Similar Recipes - Full Width Below */}
-            {prediction && prediction.similar_recipes && prediction.similar_recipes.length > 0 && (
-              <div className="similar-section">
-                <h2>Recettes Similaires de la Base de Données</h2>
-                <div className="recipes-grid">
-                  {prediction.similar_recipes.map((recipe, idx) => (
-                    <div key={idx} className="recipe-card-modern">
-                      <div className="recipe-header">
-                        <h3>{recipe.name}</h3>
-                        <div className="recipe-rating-badge">
-                          <span className="badge-stars">
-                            {[...Array(5)].map((_, i) => (
-                              <span key={i} className={i < Math.round(recipe.rating_stars) ? 'star-small filled' : 'star-small'}>★</span>
-                            ))}
-                          </span>
-                          <span className="badge-text">{recipe.rating_stars.toFixed(2)}</span>
-                        </div>
-                      </div>
-
-                      <div className="recipe-body">
-                        <div className="similarity-badge">
-                          {recipe.similarity_score}% Correspondance
-                        </div>
-                        <div className="ingredients-section">
-                          <strong>Ingrédients:</strong>
-                          <div className="ingredients-tags">
-                            {recipe.common_ingredients && recipe.common_ingredients.map((ing, i) => (
-                              <span key={`c-${i}`} className="ingredient-tag common">{ing}</span>
-                            ))}
-                            {recipe.other_ingredients && recipe.other_ingredients.map((ing, i) => (
-                              <span key={`o-${i}`} className="ingredient-tag">{ing}</span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

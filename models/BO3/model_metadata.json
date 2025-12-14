@@ -1,18 +1,18 @@
 {
   "model_type": "Random Forest Regressor",
-  "features": "Ingredients Only (one-hot encoded with quantities)",
-  "target": "AggregatedRating (normalized 0-1)",
-  "n_estimators": 200,
-  "max_depth": 30,
+  "features": "Ingredients uniquement (one-hot encoded avec quantites)",
+  "target": "AggregatedRating (normalise 0-1)",
+  "n_estimators": 100,
+  "max_depth": 15,
   "min_samples_split": 5,
   "min_samples_leaf": 2,
   "n_features": 3618,
-  "mae_test": 0.06260506234466398,
-  "rmse_test": 0.11117909985270766,
-  "r2_test": -0.007107071947907384,
+  "mae_test": 0.06143582912558537,
+  "rmse_test": 0.11099464033248244,
+  "r2_test": -0.0037680202782339745,
   "trained_on_samples": 15650,
   "tested_on_samples": 3913,
-  "mae_stars": 0.31302531172331993,
-  "rmse_stars": 0.5558954992635383,
-  "training_time_seconds": 5.476898193359375
+  "mae_stars": 0.30717914562792686,
+  "rmse_stars": 0.5549732016624122,
+  "training_time_seconds": 51.516762495040894
 }
